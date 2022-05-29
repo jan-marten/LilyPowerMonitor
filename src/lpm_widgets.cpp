@@ -24,6 +24,12 @@ static lv_obj_t *tabSettings;
 
 static lv_style_t style_box;
 
+lv_obj_t *chartPower;
+lv_chart_series_t *chartSeriesPower;
+
+lv_obj_t *chartPV;
+lv_chart_series_t *chartSeriesPV;
+
 static char buff[16]; // used for formatting floats into strings
 
 void lpm_widgets(void)
@@ -160,14 +166,101 @@ static void CreateTabChart(lv_obj_t *parent)
 {
     // Here comes chart data for power and gas consumption
 
-    lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_TOP);
+   lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_TOP);
+
+    lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
+
+    lv_coord_t grid_h_chart = lv_page_get_height_grid(parent, 1, 1);
+    lv_coord_t grid_w_chart = lv_page_get_width_grid(parent, disp_size <= LV_DISP_SIZE_LARGE ? 1 : 2, 1);
+
+    chartPower = lv_chart_create(parent, NULL);
+    lv_obj_add_style(chartPower, LV_CHART_PART_BG, &style_box);
+    if (disp_size <= LV_DISP_SIZE_SMALL) {
+        lv_obj_set_style_local_text_font(chartPower, LV_CHART_PART_SERIES_BG, LV_STATE_DEFAULT, lv_theme_get_font_small());
+    }
+    lv_obj_set_drag_parent(chartPower, true);
+    lv_obj_set_style_local_value_str(chartPower, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, "Power consumption");
+    lv_obj_set_width_margin(chartPower, grid_w_chart);
+    lv_obj_set_height_margin(chartPower, grid_h_chart);
+    lv_chart_set_div_line_count(chartPower, 3, 0);
+    lv_chart_set_point_count(chartPower, 12); // 12 hours of data is displayed
+    lv_chart_set_range(chartPower, 0, 4000);
+    lv_chart_set_type(chartPower, LV_CHART_TYPE_LINE);
+    if (disp_size > LV_DISP_SIZE_SMALL) {
+        lv_obj_set_style_local_pad_left(chartPower,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 4 * (LV_DPI / 10));
+        lv_obj_set_style_local_pad_bottom(chartPower,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 3 * (LV_DPI / 10));
+        lv_obj_set_style_local_pad_right(chartPower,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 2 * (LV_DPI / 10));
+        lv_obj_set_style_local_pad_top(chartPower,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 2 * (LV_DPI / 10));
+        lv_chart_set_y_tick_length(chartPower, 0, 0);
+        lv_chart_set_x_tick_length(chartPower, 0, 0);
+        lv_chart_set_y_tick_texts(chartPower, "4.0\n3.5\n3.0\n2.5\n2.0\n1.5\n1.0\n0.5\n0", 0, LV_CHART_AXIS_DRAW_LAST_TICK);
+        lv_chart_set_x_tick_texts(chartPower, "7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18", 0, LV_CHART_AXIS_DRAW_LAST_TICK);
+    }
+
+    chartSeriesPower = lv_chart_add_series(chartPower, LV_THEME_DEFAULT_COLOR_PRIMARY);
+    lv_chart_set_next(chartPower, chartSeriesPower, 10);
+    lv_chart_set_next(chartPower, chartSeriesPower, 200);
+    lv_chart_set_next(chartPower, chartSeriesPower, 3000);
+    lv_chart_set_next(chartPower, chartSeriesPower, 400);
+    lv_chart_set_next(chartPower, chartSeriesPower, 50);
+    lv_chart_set_next(chartPower, chartSeriesPower, 600);
+    lv_chart_set_next(chartPower, chartSeriesPower, 750);
+    lv_chart_set_next(chartPower, chartSeriesPower, 840);
+    lv_chart_set_next(chartPower, chartSeriesPower, 900);
+    lv_chart_set_next(chartPower, chartSeriesPower, 1000);
+    lv_chart_set_next(chartPower, chartSeriesPower, 500);
+    lv_chart_set_next(chartPower, chartSeriesPower, 50);
+
 }
 
 static void CreateTabPV(lv_obj_t *parent)
 {
     // Here comes chart data retrieved from SolarEdge
 
-    lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_MID);
+   lv_page_set_scrl_layout(parent, LV_LAYOUT_PRETTY_TOP);
+
+    lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
+
+    lv_coord_t grid_h_chart = lv_page_get_height_grid(parent, 1, 1);
+    lv_coord_t grid_w_chart = lv_page_get_width_grid(parent, disp_size <= LV_DISP_SIZE_LARGE ? 1 : 2, 1);
+
+    chartPV = lv_chart_create(parent, NULL);
+    lv_obj_add_style(chartPV, LV_CHART_PART_BG, &style_box);
+    if (disp_size <= LV_DISP_SIZE_SMALL) {
+        lv_obj_set_style_local_text_font(chartPV, LV_CHART_PART_SERIES_BG, LV_STATE_DEFAULT, lv_theme_get_font_small());
+    }
+    lv_obj_set_drag_parent(chartPV, true);
+    lv_obj_set_style_local_value_str(chartPV, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, "Solar power generated");
+    lv_obj_set_width_margin(chartPV, grid_w_chart);
+    lv_obj_set_height_margin(chartPV, grid_h_chart);
+    lv_chart_set_div_line_count(chartPV, 3, 0);
+    lv_chart_set_point_count(chartPV, 12); // 12 hours of data is displayed
+    lv_chart_set_range(chartPV, 0, 4000);
+    lv_chart_set_type(chartPV, LV_CHART_TYPE_LINE);
+    if (disp_size > LV_DISP_SIZE_SMALL) {
+        lv_obj_set_style_local_pad_left(chartPV,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 4 * (LV_DPI / 10));
+        lv_obj_set_style_local_pad_bottom(chartPV,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 3 * (LV_DPI / 10));
+        lv_obj_set_style_local_pad_right(chartPV,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 2 * (LV_DPI / 10));
+        lv_obj_set_style_local_pad_top(chartPV,  LV_CHART_PART_BG, LV_STATE_DEFAULT, 2 * (LV_DPI / 10));
+        lv_chart_set_y_tick_length(chartPV, 0, 0);
+        lv_chart_set_x_tick_length(chartPV, 0, 0);
+        lv_chart_set_y_tick_texts(chartPV, "4.0\n3.5\n3.0\n2.5\n2.0\n1.5\n1.0\n0.5\n0", 0, LV_CHART_AXIS_DRAW_LAST_TICK);
+        lv_chart_set_x_tick_texts(chartPV, "7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18", 0, LV_CHART_AXIS_DRAW_LAST_TICK);
+    }
+
+    chartSeriesPV = lv_chart_add_series(chartPV, LV_THEME_DEFAULT_COLOR_PRIMARY);
+    lv_chart_set_next(chartPV, chartSeriesPV, 0);
+    lv_chart_set_next(chartPV, chartSeriesPV, 500);
+    lv_chart_set_next(chartPV, chartSeriesPV, 1200);
+    lv_chart_set_next(chartPV, chartSeriesPV, 1800);
+    lv_chart_set_next(chartPV, chartSeriesPV, 2700);
+    lv_chart_set_next(chartPV, chartSeriesPV, 3000);
+    lv_chart_set_next(chartPV, chartSeriesPV, 3500);
+    lv_chart_set_next(chartPV, chartSeriesPV, 2500);
+    lv_chart_set_next(chartPV, chartSeriesPV, 1500);
+    lv_chart_set_next(chartPV, chartSeriesPV, 1000);
+    lv_chart_set_next(chartPV, chartSeriesPV, 500);
+    lv_chart_set_next(chartPV, chartSeriesPV, 0);
 }
 
 static void CreateTabSettings(lv_obj_t *parent)
